@@ -1,17 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { PencilLine, Plus, ArrowLeft } from "lucide-react";
+import { PencilLine, Plus, ArrowLeft, Trash2 } from "lucide-react";
 import TaskCreateCard from "./TaskCreateCard";
 import useContentLogic from "../hooks/useContentLogic";
 import { v4 as uuidv4 } from "uuid";
 
-function Card({ onClose, label, onEditLabel }) {
+function Card({ onClose, label, onEditLabel, removeCard, card  }) {
   const [newLabel, setNewLabel] = useState(label);
   const [inputValue, setInputValue] = useState("");
   const [tasksCard, setTasksCard] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
   const inputRef = useRef(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     if (label) {
@@ -24,6 +25,19 @@ function Card({ onClose, label, onEditLabel }) {
       }
     }
   }, [label]);
+
+  const handleRemoveCard = () => {
+    setIsConfirmModalOpen(true);
+  };
+
+  const confirmRemoveCard = () => {
+    removeCard(card.id);  // Passa o ID do card
+    onClose();
+  };
+
+  const cancelRemoveCard = () => {
+    setIsConfirmModalOpen(false);
+  };
 
   const removeTaskCard = (index) => {
     setTasksCard((prevTasks) => {
@@ -159,7 +173,7 @@ function Card({ onClose, label, onEditLabel }) {
           </div>
         </div>
 
-        <div className="p-12">
+        <div className="p-12 pb-4">
           <div className="flex justify-center items-center">
             <input
               type="text"
@@ -178,7 +192,9 @@ function Card({ onClose, label, onEditLabel }) {
             >
               <Plus
                 size={46}
-                className="bg-btn-purple p-2 rounded-full text-white hover:bg-btn-purple/90 transition duration-200 z-10"
+                className="bg-btn-purple p-2 rounded-full text-white hover:brightness-125 
+                transition-all duration-300 ease-in-out 
+                active:brightness-90 z-10"
               />
             </button>
           </div>
@@ -226,6 +242,51 @@ function Card({ onClose, label, onEditLabel }) {
               handleCheck={handleCheck}
             />
           </div>
+          <div className="flex justify-center items-center pt-8">
+          <button 
+            onClick={handleRemoveCard}
+            className="border-2 border-btn-purple bg-btn-purple w-[30%] h-12 rounded-2xl text-white font-medium 
+              hover:brightness-125 
+              transition-all duration-300 ease-in-out 
+              active:brightness-90"
+          >
+            Excluir Card
+          </button>
+        </div>
+        {isConfirmModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+            <div className="bg-white p-8 rounded-2xl w-full max-w-md text-center">
+              <div className="flex justify-center mb-4">
+                <Trash2 size={64} className="text-btn-purple" />
+              </div>
+              <h2 className="text-2xl font-bold mb-4 text-btn-purple">
+                Tem certeza que deseja excluir este card?
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Todos os dados relacionados a este card serão permanentemente removidos.
+              </p>
+              <div className="flex justify-center gap-4">
+                <button 
+                  onClick={cancelRemoveCard}
+                  className="border-2 border-btn-purple text-btn-purple w-[40%] h-12 rounded-2xl font-medium 
+                    hover:bg-btn-purple hover:text-white
+                    transition-all duration-300 ease-in-out"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={confirmRemoveCard}
+                  className="border-2 border-btn-purple bg-btn-purple w-[40%] h-12 rounded-2xl text-white font-medium 
+                    hover:brightness-125 
+                    transition-all duration-300 ease-in-out 
+                    active:brightness-90"
+                >
+                  Excluir
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         </div>
       </div>
     </div>
@@ -236,6 +297,8 @@ Card.propTypes = {
   label: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
   onEditLabel: PropTypes.func.isRequired,
+  removeCard: PropTypes.func.isRequired,
+  card: PropTypes.object.isRequired,
 };
 
 export default Card;

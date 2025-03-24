@@ -59,8 +59,8 @@ export default function useContentLogic() {
   // Atualizar o label de um card
   const updateCardLabel = (oldLabel, newLabel, tasks = null) => {
     if (!newLabel.trim()) return; // Evita nomes vazios
-    
-    // Atualiza os cards no estado
+  
+    // Atualiza os cards no estado usando o label para identificação
     const updatedCards = cards.map((card) =>
       card.label === oldLabel ? { ...card, label: newLabel } : card
     );
@@ -69,17 +69,12 @@ export default function useContentLogic() {
     // Atualiza as tarefas no localStorage
     const storedTasks = JSON.parse(localStorage.getItem("tasks")) || {};
     
-    // Se recebemos as tarefas como parâmetro, usamos elas
-    if (tasks) {
-      storedTasks[newLabel] = tasks;
+    // Transfere as tarefas do card antigo para o novo label
+    if (storedTasks[oldLabel]) {
+      // Se recebemos tasks como parâmetro, usa esses
+      storedTasks[newLabel] = tasks || storedTasks[oldLabel];
+      delete storedTasks[oldLabel];
     }
-    // Caso contrário, transferimos as tarefas existentes (se houver)
-    else if (storedTasks[oldLabel]) {
-      storedTasks[newLabel] = storedTasks[oldLabel];
-    }
-    
-    // Remove as tarefas do label antigo
-    delete storedTasks[oldLabel];
     
     // Salva no localStorage
     localStorage.setItem("tasks", JSON.stringify(storedTasks));
@@ -112,6 +107,23 @@ export default function useContentLogic() {
       }
       return newTasksCard;
     });
+  };
+
+  // Em useContentLogic.js
+  const removeCard = (cardId) => {
+    // Encontrar o card pelo ID
+    const cardToRemove = cards.find(card => card.id === cardId);
+    
+    if (!cardToRemove) return;
+
+    // Remover o card dos cards salvos
+    const updatedCards = cards.filter(card => card.id !== cardId);
+    setCards(updatedCards);
+
+    // Remover as tarefas associadas a este card no localStorage
+    const storedTasks = JSON.parse(localStorage.getItem("tasks")) || {};
+    delete storedTasks[cardToRemove.label];
+    localStorage.setItem("tasks", JSON.stringify(storedTasks));
   };
 
   // Adicionar uma nova tarefa ao modal principal
@@ -161,5 +173,6 @@ export default function useContentLogic() {
     setOpenCard,
     setSelectedTask,
     setCards,
+    removeCard,
   };
 }

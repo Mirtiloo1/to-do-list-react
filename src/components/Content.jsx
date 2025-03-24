@@ -25,7 +25,7 @@ function Content() {
     addCard,
     tasksModal,
     addTask,
-    removeTaskCard,
+    removeCard,
   } = useContentLogic();
 
   useEffect(() => {
@@ -51,7 +51,6 @@ function Content() {
           setOpenTask={setOpenTask}
           setSelectedTask={setSelectedTask}
           removeTask={removeTask}
-          removeTaskCard={removeTaskCard}
         />
       </div>
 
@@ -69,10 +68,12 @@ function Content() {
 
       {openCard && (
         <Card
-          onClose={() => setOpenCard(null)}
-          label={typeof openCard === "object" ? openCard.label : openCard}
-          onEditLabel={updateCardLabel}
-        />
+        onClose={() => setOpenCard(null)}
+        label={typeof openCard === "object" ? openCard.label : openCard}
+        card={typeof openCard === "object" ? openCard : cards.find(c => c.label === openCard)}
+        onEditLabel={updateCardLabel}
+        removeCard={removeCard}
+      />
       )}
     </div>
   );
