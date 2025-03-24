@@ -7,6 +7,16 @@ export default function useContentLogic() {
   // Estado dos cards
   const [cards, setCards] = useState(() => {
     const savedCards = localStorage.getItem("cards");
+    const savedCardOrder = localStorage.getItem("cardOrder");
+    
+    if (savedCards && savedCardOrder) {
+      const cardsArray = JSON.parse(savedCards);
+      const orderArray = JSON.parse(savedCardOrder);
+      
+      // Reordena os cards baseado na ordem salva
+      return orderArray.map(id => cardsArray.find(card => card.id === id)).filter(Boolean);
+    }
+    
     return savedCards ? JSON.parse(savedCards) : [];
   });
 
@@ -45,6 +55,24 @@ export default function useContentLogic() {
     localStorage.setItem("tasks", JSON.stringify(tasksCard));
   }, [tasksCard]);
 
+  useEffect(() => {
+    localStorage.setItem("cards", JSON.stringify(cards));
+    // Salva apenas os IDs dos cards na ordem atual
+    localStorage.setItem("cardOrder", JSON.stringify(cards.map(card => card.id)));
+  }, [cards]);
+
+  useEffect(() => {
+    localStorage.setItem("cards", JSON.stringify(cards));
+}, [cards]);
+
+useEffect(() => {
+    const savedCards = JSON.parse(localStorage.getItem("cards"));
+    if (savedCards) {
+        setCards(savedCards);
+    }
+}, []);
+
+
   /** ====================== FUNÇÕES ====================== **/
 
   // Adicionar um novo card
@@ -59,6 +87,15 @@ export default function useContentLogic() {
   // Atualizar o label de um card
   const updateCardLabel = (oldLabel, newLabel, tasks = null) => {
     if (!newLabel.trim()) return; // Evita nomes vazios
+    
+    // Verifica se já existe um card com o novo label
+    const existingCard = cards.find(card => card.label === newLabel);
+    
+    // Se já existir um card com esse nome, não permite a mudança
+    if (existingCard && existingCard.label !== oldLabel) {
+      alert("Já existe um card com este nome!");
+      return;
+    }
   
     // Atualiza os cards no estado usando o label para identificação
     const updatedCards = cards.map((card) =>
@@ -69,10 +106,9 @@ export default function useContentLogic() {
     // Atualiza as tarefas no localStorage
     const storedTasks = JSON.parse(localStorage.getItem("tasks")) || {};
     
-    // Transfere as tarefas do card antigo para o novo label
+    // Cria uma cópia única das tarefas para o novo label
     if (storedTasks[oldLabel]) {
-      // Se recebemos tasks como parâmetro, usa esses
-      storedTasks[newLabel] = tasks || storedTasks[oldLabel];
+      storedTasks[newLabel] = tasks || [...storedTasks[oldLabel]];
       delete storedTasks[oldLabel];
     }
     
