@@ -26,6 +26,7 @@ function Content() {
     tasksModal,
     addTask,
     removeCard,
+    updateCardOrder,
   } = useContentLogic();
 
   useEffect(() => {
@@ -44,7 +45,7 @@ function Content() {
       <HeaderContent addCard={addCard} setIsModalOpen={setIsModalOpen} />
 
       <div className="flex flex-grow w-full">
-        <CardContent cards={cards} setOpenCard={setOpenCard} />
+        <CardContent cards={cards} setOpenCard={setOpenCard} updateCardOrder={updateCardOrder} />
 
         <TaskComponent
           tasksModal={tasksModal}
@@ -60,9 +61,14 @@ function Content() {
 
       {openTask && selectedTask && (
         <Task
-          task={{ ...selectedTask, checked: selectedTask.checked ?? false }}
+          task={{
+            ...selectedTask, 
+            checked: selectedTask.checked ?? false
+          }}
           onClose={() => setOpenTask(false)}
-          onCheck={() => handleCheck(tasksModal.indexOf(selectedTask))}
+          onCheck={() => {
+            handleCheck(selectedTask);
+          }}
         />
       )}
 

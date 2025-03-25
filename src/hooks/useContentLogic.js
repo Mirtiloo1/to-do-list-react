@@ -2,127 +2,93 @@ import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export default function useContentLogic() {
-  /** ====================== ESTADOS ====================== **/
-  
-  // Estado dos cards
   const [cards, setCards] = useState(() => {
     const savedCards = localStorage.getItem("cards");
     const savedCardOrder = localStorage.getItem("cardOrder");
-    
+
     if (savedCards && savedCardOrder) {
       const cardsArray = JSON.parse(savedCards);
       const orderArray = JSON.parse(savedCardOrder);
-      
-      // Reordena os cards baseado na ordem salva
-      return orderArray.map(id => cardsArray.find(card => card.id === id)).filter(Boolean);
+
+      return orderArray
+        .map((id) => cardsArray.find((card) => card.id === id))
+        .filter(Boolean);
     }
-    
+
     return savedCards ? JSON.parse(savedCards) : [];
   });
 
-  // Estado das tarefas dentro do modal
   const [tasksModal, setTasksModal] = useState(() => {
     const savedTasks = localStorage.getItem("tasksModal");
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
 
-  // Estado para armazenar as tarefas dos cards
   const [tasksCard, setTasksCard] = useState(() => {
     const storedTasks = localStorage.getItem("tasks");
     return storedTasks ? JSON.parse(storedTasks) : {};
   });
 
-  // Estado do modal principal e do modal de tarefas
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openCard, setOpenCard] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
 
-  /** ====================== EFEITOS ====================== **/
-
-  // Salvar cards no localStorage sempre que houver mudanças
   useEffect(() => {
     localStorage.setItem("cards", JSON.stringify(cards));
+    localStorage.setItem(
+      "cardOrder",
+      JSON.stringify(cards.map((card) => card.id))
+    );
   }, [cards]);
 
-  // Salvar as tarefas no localStorage sempre que `tasksModal` mudar
   useEffect(() => {
     localStorage.setItem("tasksModal", JSON.stringify(tasksModal));
   }, [tasksModal]);
 
-  // Salvar as tarefas dos cards no localStorage
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasksCard));
   }, [tasksCard]);
 
-  useEffect(() => {
-    localStorage.setItem("cards", JSON.stringify(cards));
-    // Salva apenas os IDs dos cards na ordem atual
-    localStorage.setItem("cardOrder", JSON.stringify(cards.map(card => card.id)));
-  }, [cards]);
-
-  useEffect(() => {
-    localStorage.setItem("cards", JSON.stringify(cards));
-}, [cards]);
-
-useEffect(() => {
-    const savedCards = JSON.parse(localStorage.getItem("cards"));
-    if (savedCards) {
-        setCards(savedCards);
-    }
-}, []);
-
-
-  /** ====================== FUNÇÕES ====================== **/
-
-  // Adicionar um novo card
   const addCard = () => {
     const newCard = {
       id: uuidv4(),
       label: `Card ${cards.length + 1}`,
     };
-    setCards([...cards, newCard]);
+    const updatedCards = [...cards, newCard];
+    setCards(updatedCards);
   };
 
-  // Atualizar o label de um card
   const updateCardLabel = (oldLabel, newLabel, tasks = null) => {
-    if (!newLabel.trim()) return; // Evita nomes vazios
-    
-    // Verifica se já existe um card com o novo label
-    const existingCard = cards.find(card => card.label === newLabel);
-    
-    // Se já existir um card com esse nome, não permite a mudança
+    if (!newLabel.trim()) return;
+
+    const existingCard = cards.find((card) => card.label === newLabel);
+
     if (existingCard && existingCard.label !== oldLabel) {
       alert("Já existe um card com este nome!");
       return;
     }
-  
-    // Atualiza os cards no estado usando o label para identificação
+
     const updatedCards = cards.map((card) =>
       card.label === oldLabel ? { ...card, label: newLabel } : card
     );
     setCards(updatedCards);
-  
-    // Atualiza as tarefas no localStorage
+
     const storedTasks = JSON.parse(localStorage.getItem("tasks")) || {};
-    
-    // Cria uma cópia única das tarefas para o novo label
+
     if (storedTasks[oldLabel]) {
       storedTasks[newLabel] = tasks || [...storedTasks[oldLabel]];
       delete storedTasks[oldLabel];
     }
-    
-    // Salva no localStorage
+
     localStorage.setItem("tasks", JSON.stringify(storedTasks));
   };
 
-  // Adicionar uma nova tarefa ao card
   const addTaskCard = (newTask, cardLabel) => {
     if (!cardLabel) return;
-    
+
     const taskWithId = { ...newTask, id: uuidv4(), checked: false };
-    
-    setTasksCard(prev => {
+
+    setTasksCard((prev) => {
       const newTasksCard = { ...prev };
       if (!Array.isArray(newTasksCard[cardLabel])) {
         newTasksCard[cardLabel] = [];
@@ -132,58 +98,83 @@ useEffect(() => {
     });
   };
 
-  // Remover uma tarefa de um card
-  const removeTaskCard = (index, cardLabel) => {
-    if (!cardLabel) return;
-    
-    setTasksCard(prev => {
+  const removeTaskCard = (taskId, cardLabel) => {
+    setTasksCard((prev) => {
       const newTasksCard = { ...prev };
+
       if (Array.isArray(newTasksCard[cardLabel])) {
-        newTasksCard[cardLabel] = newTasksCard[cardLabel].filter((_, i) => i !== index);
+        newTasksCard[cardLabel] = newTasksCard[cardLabel].filter(
+          (task) => task.id !== taskId
+        );
       }
+
       return newTasksCard;
     });
   };
 
-  // Em useContentLogic.js
+  const updateCardOrder = (newOrder) => {
+    setCards(newOrder);
+  };
+
   const removeCard = (cardId) => {
-    // Encontrar o card pelo ID
-    const cardToRemove = cards.find(card => card.id === cardId);
-    
+    const cardToRemove = cards.find((card) => card.id === cardId);
+
     if (!cardToRemove) return;
 
-    // Remover o card dos cards salvos
-    const updatedCards = cards.filter(card => card.id !== cardId);
+    const updatedCards = cards.filter((card) => card.id !== cardId);
     setCards(updatedCards);
 
-    // Remover as tarefas associadas a este card no localStorage
     const storedTasks = JSON.parse(localStorage.getItem("tasks")) || {};
     delete storedTasks[cardToRemove.label];
     localStorage.setItem("tasks", JSON.stringify(storedTasks));
   };
 
-  // Adicionar uma nova tarefa ao modal principal
   const addTask = (newTask) => {
-    const taskWithId = { ...newTask, id: uuidv4() };
+    const isDuplicateTask = tasksModal.some(
+      (task) => task.title === newTask.title
+    );
+
+    if (isDuplicateTask) {
+      alert("Já existe uma tarefa com este nome!");
+      return;
+    }
+
+    const taskWithId = {
+      ...newTask,
+      id: uuidv4(),
+      checked: false,
+    };
     setTasksModal([...tasksModal, taskWithId]);
   };
 
-  // Remover uma tarefa pelo índice
-  const removeTask = (index) => {
-    const updatedTasks = tasksModal.filter((_, i) => i !== index);
+  const removeTask = (taskId) => {
+    const updatedTasks = tasksModal.filter((task) => task.id !== taskId);
     setTasksModal(updatedTasks);
   };
 
-  // Alternar estado de `checked` de uma tarefa
-  const handleCheck = (index) => {
+  const handleCheck = (selectedTask) => {
     setTasksModal((prevTasks) =>
-      prevTasks.map((task, i) =>
-        i === index ? { ...task, checked: !task.checked } : task
+      prevTasks.map((task) =>
+        task.id === selectedTask.id && task.title === selectedTask.title
+          ? { ...task, checked: !task.checked }
+          : task
       )
     );
   };
 
-  /** ====================== RETORNO ====================== **/
+  const handleTaskCardCheck = (taskId, cardLabel, isChecked) => {
+    setTasksCard((prev) => {
+      const newTasksCard = { ...prev };
+
+      if (Array.isArray(newTasksCard[cardLabel])) {
+        newTasksCard[cardLabel] = newTasksCard[cardLabel].map((task) =>
+          task.id === taskId ? { ...task, checked: isChecked } : task
+        );
+      }
+
+      return newTasksCard;
+    });
+  };
 
   return {
     // Estados
@@ -195,7 +186,6 @@ useEffect(() => {
     selectedTask,
     cards,
 
-    // Funções 
     addTask,
     removeTask,
     handleCheck,
@@ -210,5 +200,7 @@ useEffect(() => {
     setSelectedTask,
     setCards,
     removeCard,
+    updateCardOrder,
+    handleTaskCardCheck,
   };
 }

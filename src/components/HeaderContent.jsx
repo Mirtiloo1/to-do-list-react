@@ -9,7 +9,7 @@ function HeaderContent({ addCard, setIsModalOpen }) {
         <button onClick={addCard} className="text-btn-purple">
           <Plus
             size={40}
-            className="bg-btn-purple p-1 rounded-full text-white hover:bg-btn-purple/80 transition duration-200"
+            className="bg-btn-purple p-1 rounded-full text-white hover:brightness-125 transition duration-200"
           />
         </button>
       </div>
@@ -21,7 +21,7 @@ function HeaderContent({ addCard, setIsModalOpen }) {
         >
           <Plus
             size={40}
-            className="bg-btn-purple p-1 rounded-full text-white hover:bg-btn-purple/80 transition duration-200"
+            className="bg-btn-purple p-1 rounded-full text-white hover:brightness-125 transition duration-200"
           />
         </button>
       </div>
