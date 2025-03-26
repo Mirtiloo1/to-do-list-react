@@ -1,8 +1,17 @@
-# React + Vite
+# 📝 To-Do List em React  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Um gerenciador de tarefas interativo desenvolvido com **React.js**, utilizando **Vite** e estilizado com **Tailwind CSS**.  
+Crie **cards personalizados** para organizar suas tarefas por categoria e gerencie suas listas de forma simples e eficiente! 🚀  
 
-Currently, two official plugins are available:
+## ✨ Tecnologias utilizadas  
+- ⚛️ **React.js** com **Vite**  
+- 🎨 **Tailwind CSS**  
+- 📜 **JavaScript ES6+**  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔥 Funcionalidades  
+✅ Criar e gerenciar tarefas  
+✅ Marcar tarefas como concluídas  
+✅ Excluir tarefas e cards  
+✅ Organizar tarefas dentro de **cards personalizados**  
+✅ Editar o nome dos cards  
+
