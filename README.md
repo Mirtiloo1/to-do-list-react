@@ -19,10 +19,4 @@ Crie **cards personalizados** para organizar suas tarefas por categoria e gerenc
 ✅ Marcar tarefas como concluídas  
 ✅ Excluir tarefas e cards  
 ✅ Organizar tarefas dentro de **cards personalizados**  
-✅ Editar o nome dos cards  
-
-## 📦 Como rodar o projeto  
-
-1️⃣ Clone o repositório:  
-```sh
-git clone https://github.com/seu-usuario/nome-do-repositorio.git
+✅ Editar o nome dos cards 
