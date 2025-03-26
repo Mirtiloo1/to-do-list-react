@@ -1,22 +1,26 @@
-# 📝 To-Do List em React  
+# 📝 To-Do List in React
 
-Um gerenciador de tarefas interativo desenvolvido com **React.js**, utilizando **Vite** e estilizado com **Tailwind CSS**.  
-Crie **cards personalizados** para organizar suas tarefas por categoria e gerencie suas listas de forma simples e eficiente! 🚀  
+An interactive task manager developed with **React.js**, using **Vite**, and styled with **Tailwind CSS**.  
+Create **customized cards** to organize your tasks by category and manage your lists simply and efficiently! 🚀
 
-## 🎥 Demonstração  
+## 🎥 Demo
 
 <p align="center">
-  <img src="video.gif" alt="Demonstração do Projeto">
+  <img src="video.gif" alt="Project Demo">
 </p>
 
-## ✨ Tecnologias utilizadas  
-- ⚛️ **React.js** com **Vite**  
+## ✨ Technologies Used
+- ⚛️ **React.js** with **Vite**  
 - 🎨 **Tailwind CSS**  
 - 📜 **JavaScript ES6+**  
 
-## 🔥 Funcionalidades  
-✅ Criar e gerenciar tarefas  
-✅ Marcar tarefas como concluídas  
-✅ Excluir tarefas e cards  
-✅ Organizar tarefas dentro de **cards personalizados**  
-✅ Editar o nome dos cards 
+## 🔥 Features
+✅ Create and manage tasks  
+✅ Mark tasks as completed  
+✅ Delete tasks and cards  
+✅ Organize tasks within **customized cards**  
+✅ Edit card names  
+
+## 🚀 Live Demo
+
+Check out the live version of the app here: [https://to-do-list-react-1jfn.vercel.app/](https://to-do-list-react-1jfn.vercel.app/)
